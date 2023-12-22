@@ -19,14 +19,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.isty.architecture.app.classes.Horaire;
 import fr.isty.architecture.app.classes.Personne;
 import fr.isty.architecture.app.classes.Reservation;
 import fr.isty.architecture.app.classes.ReservationTable;
 import fr.isty.architecture.app.classes.Salle;
 import fr.isty.architecture.data.Database;
+import com.google.gson.Gson;
 
 public class Controller {
 
@@ -42,7 +41,7 @@ public class Controller {
     public Controller(View view, Model model) {
         this.view = view;
         this.model = model;
-        Database.init();
+//        Database.init();
         fetchData();
     }
 
@@ -230,8 +229,7 @@ public class Controller {
                     } finally {
                         fetchData();
                     }
-                }
-                else{
+                } else {
                     showErrorDialog("Il faut selectionnez la Personne pour la supprimer");
                 }
             }
@@ -262,8 +260,7 @@ public class Controller {
                     } finally {
                         fetchData();
                     }
-                }
-                else{
+                } else {
                     showErrorDialog("Il faut selectionnez la salle pour la supprimer");
                 }
             }
@@ -318,11 +315,13 @@ public class Controller {
                         "horaireId", selectedHoraire.getId()
                 );
 
-                ObjectMapper objectMapper = new ObjectMapper();
+
+                Gson gson = new Gson();
+
                 String jsonBody = null;
                 try {
-                    jsonBody = objectMapper.writeValueAsString(reservationInfo);
-                } catch (JsonProcessingException e) {
+                    jsonBody = gson.toJson(reservationInfo);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
 
@@ -336,7 +335,7 @@ public class Controller {
 
                 try {
                     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                    System.out.println("response "+response.statusCode());
+                    System.out.println("response " + response.statusCode());
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 } catch (InterruptedException ex) {

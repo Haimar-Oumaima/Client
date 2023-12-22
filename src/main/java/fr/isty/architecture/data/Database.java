@@ -16,45 +16,46 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import fr.isty.architecture.app.classes.Horaire;
 import fr.isty.architecture.app.classes.Personne;
 import fr.isty.architecture.app.classes.Reservation;
 import fr.isty.architecture.app.classes.Salle;
 
 public class Database {
-	final static String DBname = "jdbc:sqlite:ressources.db";
+//	final static String DBname = "jdbc:sqlite:ressources.db";
 	static Connection connection = null;
 
-	public static void init() {
-		try {
-			// Chargement du pilote JDBC SQLite
-			Class.forName("org.sqlite.JDBC");
-			// Connexion à la base de données (crée un fichier de base de données s'il n'existe pas)
-			connection = DriverManager.getConnection(DBname);
-			connection.setAutoCommit(false);
-			Statement statement = connection.createStatement();
-			if (!tableExist("horaires")) {
-				String createTableSQL = "CREATE TABLE horaires (id INTEGER PRIMARY KEY, debut TEXT, fin TEXT)";
-				statement.execute(createTableSQL);
-			}
-			if (!tableExist("salles")) {
-				String createTableSQL = "CREATE TABLE salles (id INTEGER PRIMARY KEY, name TEXT, localization TEXT, occupee NUMBER(1))";
-				statement.execute(createTableSQL);
-			}
-			if (!tableExist("personnes")) {
-				String createTableSQL = "CREATE TABLE personnes (id INTEGER PRIMARY KEY, name TEXT)";
-				statement.execute(createTableSQL);
-			}
-			if (!tableExist("reservations")) {
-				String createTableSQL = "CREATE TABLE reservations (id INTEGER PRIMARY KEY, salle TEXT, personne TEXT, horaire TEXT)";
-				statement.execute(createTableSQL);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void init() {
+//		try {
+//			// Chargement du pilote JDBC SQLite
+//			Class.forName("org.sqlite.JDBC");
+//			// Connexion à la base de données (crée un fichier de base de données s'il n'existe pas)
+//			connection = DriverManager.getConnection(DBname);
+//			connection.setAutoCommit(false);
+//			Statement statement = connection.createStatement();
+//			if (!tableExist("horaires")) {
+//				String createTableSQL = "CREATE TABLE horaires (id INTEGER PRIMARY KEY, debut TEXT, fin TEXT)";
+//				statement.execute(createTableSQL);
+//			}
+//			if (!tableExist("salles")) {
+//				String createTableSQL = "CREATE TABLE salles (id INTEGER PRIMARY KEY, name TEXT, localization TEXT, occupee NUMBER(1))";
+//				statement.execute(createTableSQL);
+//			}
+//			if (!tableExist("personnes")) {
+//				String createTableSQL = "CREATE TABLE personnes (id INTEGER PRIMARY KEY, name TEXT)";
+//				statement.execute(createTableSQL);
+//			}
+//			if (!tableExist("reservations")) {
+//				String createTableSQL = "CREATE TABLE reservations (id INTEGER PRIMARY KEY, salle TEXT, personne TEXT, horaire TEXT)";
+//				statement.execute(createTableSQL);
+//			}
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public static void commitAll() {
 		try {
@@ -223,7 +224,9 @@ public class Database {
 
 		try {
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			Salle[] sallesArray = new ObjectMapper().readValue(response.body(), Salle[].class);
+//			Salle[] sallesArray = new ObjectMapper().readValue(response.body(), Salle[].class);
+			Salle[] sallesArray = new Gson().fromJson(response.body(), Salle[].class);
+
 			return Arrays.asList(sallesArray);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -244,8 +247,10 @@ public class Database {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             // Supposons que votre API renvoie un tableau JSON de personnes
-            Personne[] personnesArray = new ObjectMapper().readValue(response.body(), Personne[].class);
-            return Arrays.asList(personnesArray);
+//            Personne[] personnesArray = new ObjectMapper().readValue(response.body(), Personne[].class);
+			Personne[] personnesArray = new Gson().fromJson(response.body(), Personne[].class);
+
+			return Arrays.asList(personnesArray);
         } catch (Exception e) {
             e.printStackTrace();
             return List.of(); // Retourne une liste vide en cas d'erreur
@@ -297,7 +302,9 @@ public class Database {
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
 			// Supposons que votre API renvoie un tableau JSON de personnes
-			Horaire[] horairesArray = new ObjectMapper().readValue(response.body(), Horaire[].class);
+//			Horaire[] horairesArray = new ObjectMapper().readValue(response.body(), Horaire[].class);
+			Horaire[] horairesArray = new Gson().fromJson(response.body(), Horaire[].class);
+
 			return Arrays.asList(horairesArray);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -319,7 +326,9 @@ public class Database {
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
 			// Supposons que votre API renvoie un tableau JSON de personnes
-			Reservation[] reservationsArray = new ObjectMapper().readValue(response.body(), Reservation[].class);
+//			Reservation[] reservationsArray = new ObjectMapper().readValue(response.body(), Reservation[].class);
+			Reservation[] reservationsArray = new Gson().fromJson(response.body(), Reservation[].class);
+
 			return Arrays.asList(reservationsArray);
 		} catch (Exception e) {
 			e.printStackTrace();

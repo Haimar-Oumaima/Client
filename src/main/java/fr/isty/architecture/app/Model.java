@@ -1,7 +1,7 @@
 package fr.isty.architecture.app;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import fr.isty.architecture.app.classes.Horaire;
 import fr.isty.architecture.app.classes.Personne;
 import fr.isty.architecture.app.classes.Reservation;
@@ -16,7 +16,6 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Model {
     private List<Personne> personnes = new ArrayList<>();
@@ -152,12 +151,17 @@ public class Model {
     }
 
     private String convertObjectToJson(Object obj) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());  // Enregistrez le module JavaTimeModule
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Optionnel, pour la représentation en chaîne ISO
+        // Création de l'instance Gson
+        GsonBuilder builder = new GsonBuilder();
+
+        // Personnalisez le format de la date si nécessaire. Exemple : ISO 8601
+        builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+        // Créez l'objet Gson
+        Gson gson = builder.create();
 
         try {
-            return objectMapper.writeValueAsString(obj);
+            return gson.toJson(obj);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
